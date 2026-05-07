@@ -1,70 +1,105 @@
+/* Alapbeállítások */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+/* Fejléc */
 header {
-    border-radius: 10px;
-    background-color: yellow;
-    padding: 10px;
-    margin: 10px;
+    background-color: #333;
+    color: #fff;
+    padding: 1rem;
+    text-align: center;
 }
 
 header img {
-    float: left;
-    margin: 20px 10px 0px 10px;
+    max-width: 100px;
+    height: auto;
 }
 
-div#wrapper {
-    margin: 10px;
+.user-info {
+    font-size: 0.9rem;
+    margin-top: 10px;
+    color: #99FFCC;
 }
 
-aside {
-    display: table-cell;
-    vertical-align: top;
-}
-
+/* Vízszintes menü (Labor követelmény) */
 nav {
-    margin: 0px 10px 0px 0px;
-    top: 0px;
-    border-radius: 10px;
-    background-color: #FF6600;
+    background: #444;
+    color: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
 nav ul {
-    list-style-type: none;
-    margin: 0px;
-    padding: 15px 0px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
-nav ul li {
-    padding: 0px 15px;;
-}
-
-nav ul li.active {
-    border-right: 5px solid blue;
-}
-
-nav ul a {
+nav ul li a {
+    display: block;
+    padding: 1rem;
+    color: #fff;
     text-decoration: none;
-    color: blue;
+    transition: background 0.3s;
 }
 
-div#content {
-    display: table-cell;
-    width: 100%;
-    border-radius: 10px;
-    background-color: #99FFCC;
-    padding: 15px;
+nav ul li a:hover, nav ul li.active a {
+    background: #99FFCC;
+    color: #333;
 }
 
-div#content img{
-    float: right;
-    width: 20em;
+/* Tartalmi rész */
+#wrapper {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
+    min-height: 70vh;
+}
+
+#content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+#content img {
+    max-width: 100%;
     height: auto;
-    margin: 0 0 15px 15px;
-    padding: 3px;
-    border: 3px solid blue;
+    display: block;
+    margin: 10px auto;
 }
 
+/* Lábléc */
 footer {
-    border-radius: 10px;
-    margin: 10px;
-    padding: 5px 20px;
-    background-color: #CC99FF;
+    background: #333;
+    color: #fff;
+    text-align: center;
+    padding: 1rem;
+    margin-top: 20px;
+}
+
+/* Reszponzív kialakítás (Mobil nézet) */
+@media (max-width: 768px) {
+    nav ul {
+        flex-direction: column;
+    }
+    
+    nav ul li {
+        text-align: center;
+        border-bottom: 1px solid #555;
+    }
 }
