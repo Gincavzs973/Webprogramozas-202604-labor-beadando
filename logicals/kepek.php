@@ -30,7 +30,9 @@ $olvaso = opendir($MAPPA);
 while (($fajl = readdir($olvaso)) !== false) {
     if (is_file($MAPPA . $fajl)) {
         $vege = strtolower(pathinfo($fajl, PATHINFO_EXTENSION));
-        if ($vege == 'jpg' || $vege == 'jpeg' || $vege == 'png') {
+        
+        // Logikai szűrő: Csak képek, KIVÉVE a logo.png
+        if (($vege == 'jpg' || $vege == 'jpeg' || $vege == 'png') && $fajl !== 'logo.png') {
             $kepek[] = $fajl;
         }
     }
