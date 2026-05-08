@@ -1,5 +1,5 @@
 <?php
-// Biztonsági ellenőrzés: A CRUD műveleteket csak bejelentkezett felhasználók érhetik el
+// Biztonsági ellenőrzés
 if (!isset($_SESSION['login'])) {
     header("Location: belepes");
     exit;
@@ -10,16 +10,16 @@ $kategoriak = array();
 $etelek = array();
 
 try {
-    // Kapcsolódás a Nethely adatbázishoz
+    // Kapcsolódás
     $dbh = new PDO('mysql:host=localhost;dbname=csapatrecept_db', 'csapatrecept_db', 'Titkostanulas,09',
                     array(PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION));
     $dbh->query('SET NAMES utf8 COLLATE utf8_general_ci');
 
-    // --- 1. C.R.U.D. MŰVELETEK FELDOLGOZÁSA (ÍRÁS/MÓDOSÍTÁS/TÖRLÉS) ---
+    // --- 1. C.R.U.D. MŰVELETEK ---
     if (isset($_POST['action'])) {
         $action = $_POST['action'];
 
-        // CREATE (Létrehozás)
+        // CREATE
         if ($action == 'create' && !empty($_POST['nev']) && !empty($_POST['kategoriaid']) && !empty($_POST['felirdatum'])) {
             $elsodatum = !empty($_POST['elsodatum']) ? $_POST['elsodatum'] : null;
             $sql = "INSERT INTO etel (nev, kategoriaid, felirdatum, elsodatum) VALUES (:nev, :kategoriaid, :felirdatum, :elsodatum)";
@@ -32,8 +32,8 @@ try {
             ));
             $uzenet = "Új étel sikeresen hozzáadva!";
         }
-        // UPDATE (Módosítás)
-        elseif ($action == 'update' && !empty($_POST['id']) && !empty($_POST['nev']) && !empty($_POST['kategoriaid']) && !empty($_POST['felirdatum'])) {
+        // UPDATE (Javítva: isset használata empty helyett az ID-nál)
+        elseif ($action == 'update' && isset($_POST['id']) && $_POST['id'] !== '' && !empty($_POST['nev']) && !empty($_POST['kategoriaid']) && !empty($_POST['felirdatum'])) {
             $elsodatum = !empty($_POST['elsodatum']) ? $_POST['elsodatum'] : null;
             $sql = "UPDATE etel SET nev = :nev, kategoriaid = :kategoriaid, felirdatum = :felirdatum, elsodatum = :elsodatum WHERE id = :id";
             $stmt = $dbh->prepare($sql);
@@ -46,8 +46,8 @@ try {
             ));
             $uzenet = "Az étel adatai sikeresen módosítva!";
         }
-        // DELETE (Törlés)
-        elseif ($action == 'delete' && !empty($_POST['id'])) {
+        // DELETE (Javítva: isset használata empty helyett az ID-nál)
+        elseif ($action == 'delete' && isset($_POST['id']) && $_POST['id'] !== '') {
             $sql = "DELETE FROM etel WHERE id = :id";
             $stmt = $dbh->prepare($sql);
             $stmt->execute(array(':id' => $_POST['id']));
@@ -57,13 +57,10 @@ try {
         }
     }
 
-    // --- 2. ADATOK LEKÉRDEZÉSE A MEGJELENÍTÉSHEZ (OLVASÁS) ---
-
-    // Kategóriák lekérdezése (A legördülő választómezőkhöz)
+    // --- 2. ADATOK LEKÉRDEZÉSE ---
     $stmtCat = $dbh->query("SELECT id, nev FROM kategoria ORDER BY nev");
     $kategoriak = $stmtCat->fetchAll(PDO::FETCH_ASSOC);
 
-    // Ételek lekérdezése (A táblázathoz, a kategória nevével kiegészítve)
     $stmtEtel = $dbh->query("
         SELECT e.id, e.nev, e.kategoriaid, k.nev AS kategoria_nev, e.felirdatum, e.elsodatum 
         FROM etel e 
