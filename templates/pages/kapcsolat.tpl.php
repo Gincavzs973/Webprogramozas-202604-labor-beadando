@@ -1,11 +1,9 @@
 <h2>Kapcsolat</h2>
 <p>Kérdése van a receptjeinkkel kapcsolatban? Írjon nekünk!</p>
 
-<?php if(isset($eredmeny) && $eredmeny !== '') { ?>
-    <div style="background: #e6f7ff; padding: 15px; margin-bottom: 20px; border-left: 5px solid #0066cc;">
-        <strong><?= $eredmeny ?></strong>
-    </div>
-<?php } ?>
+<div id="ajax-valasz" style="display:none; padding: 15px; margin-bottom: 20px; border-left: 5px solid #0066cc; background: #e6f7ff;">
+    <strong id="valasz-szoveg"></strong>
+</div>
 
 <div style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
     <form action="kapcsolat" method="post" id="kapcsolatForm" novalidate>
@@ -31,11 +29,15 @@
 
 <script>
 document.getElementById('kapcsolatForm').onsubmit = function(event) {
+    event.preventDefault(); // Megállítja a hagyományos oldalfrissítéssel járó küldést
+
     let hiba = '';
     let nev = document.getElementById('nev').value.trim();
     let szoveg = document.getElementById('szoveg').value.trim();
+    let valaszDiv = document.getElementById('ajax-valasz');
+    let valaszSzoveg = document.getElementById('valasz-szoveg');
 
-    // Szabályok ellenőrzése
+    // 1. Kliensoldali Validáció
     if (nev === '') {
         hiba += '- A név megadása kötelező!\n';
     }
@@ -45,14 +47,31 @@ document.getElementById('kapcsolatForm').onsubmit = function(event) {
         hiba += '- Az üzenetnek legalább 10 karakter hosszúnak kell lennie!\n';
     }
 
-    // Ha van hiba, megállítjuk a küldést és jelezzük
     if (hiba !== '') {
-        alert('Kérjük, javítsa a következő hibákat az elküldés előtt:\n\n' + hiba);
-        event.preventDefault(); // Megakadályozza a PHP-hez való továbbítást
+        alert('Javítsa a hibákat:\n' + hiba);
         return false;
     }
-    
-    // Ha nincs hiba, az űrlap elküldésre kerül
-    return true;
+
+    // 2. AJAX (Fetch) küldés
+    let formData = new FormData(this);
+    formData.append('ajax', 'true'); // Jelezzük a PHP-nek, hogy ez AJAX kérés
+
+    fetch('kapcsolat', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+        // Megjelenítjük a választ és ürítjük az űrlapot
+        valaszSzoveg.innerText = data;
+        valaszDiv.style.display = 'block';
+        if(data.includes("sikeresen")) {
+            document.getElementById('szoveg').value = ''; 
+        }
+    })
+    .catch(error => {
+        console.error('Hiba:', error);
+        alert('Hiba történt a küldés során.');
+    });
 };
 </script>
